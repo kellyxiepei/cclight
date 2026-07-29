@@ -4,17 +4,26 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PYTHON="$SCRIPT_DIR/../.venv/bin/python"
 PID_FILE="$SCRIPT_DIR/agent.pid"
 LOG_FILE="$SCRIPT_DIR/agent.log"
+
+# venv lives next to this script when installed (~/.cclight-mac/.venv),
+# or at the repo root when running from a checkout
+PYTHON=""
+for cand in "$SCRIPT_DIR/.venv/bin/python" "$SCRIPT_DIR/../.venv/bin/python"; do
+    if [[ -x "$cand" ]]; then
+        PYTHON="$cand"
+        break
+    fi
+done
 
 if [[ -f "$PID_FILE" ]] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
     echo "cclight agent already running (pid $(cat "$PID_FILE"))"
     exit 0
 fi
 
-if [[ ! -x "$PYTHON" ]]; then
-    echo "error: $PYTHON not found — create the venv and install requirements first" >&2
+if [[ -z "$PYTHON" ]]; then
+    echo "error: no venv found at $SCRIPT_DIR/.venv or $SCRIPT_DIR/../.venv — run install.sh first" >&2
     exit 1
 fi
 

@@ -10,6 +10,26 @@ MacOS 上的 Python agent:通过 USB 串口连接 cclight-esp32 芯片,
 - **自动重连**:后台每 5s 心跳;断开(含拔 USB)后每 3s 重扫端口,插回自动恢复
 - **全程日志**:连接/断开/重连、每条 HTTP 请求、每条串口命令及回复都打到 stdout
 
+## 安装(推荐)
+
+```bash
+./install.sh
+```
+
+安装脚本会:
+
+1. 检查本机 python3(要求 ≥ 3.9),不满足则提示安装并退出
+2. 把 agent 代码拷贝到 `~/.cclight-mac/`
+3. 在 `~/.cclight-mac/.venv` 创建 venv 并安装依赖
+4. 修改 Claude Code 全局配置 `~/.claude/settings.json` 的 hooks
+   (原文件先备份为 `settings.json.cclight-backup`,已有配置不受影响):
+   - `Notification` / `Stop`(Claude 等待用户输入)→ 亮灯
+   - `UserPromptSubmit` / `SessionStart` / `SessionEnd`(不需要输入)→ 灭灯
+   - hook 用 `curl` 调本机 agent,2s 超时且不报错,agent 没启动也不影响 Claude Code
+
+重复运行安装脚本是安全的:文件覆盖、venv 复用、hook 替换不重复。
+装完后运行 `~/.cclight-mac/start_cclight.sh` 启动,重启 Claude Code 让 hooks 生效。
+
 ## 启动
 
 前台运行:
