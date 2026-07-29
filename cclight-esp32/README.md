@@ -35,11 +35,19 @@ ESP32-C3 + MicroPython 固件:通过 USB 串口接收命令,控制外接 LED 开
 ## 烧录本程序
 
 ```bash
+./burn.sh
+```
+
+脚本会自动探测 `/dev/tty.usbmodem*` 串口(多个设备或要指定时:`./burn.sh <port>`),
+必要时把 mpremote 装进项目 venv,把 `main.py` 拷到板上并复位,复位后自动运行。
+注意:烧录前要先停掉 cclight-mac agent(它占用串口),脚本检测到端口被占用会提示。
+
+手动等价操作:
+
+```bash
 mpremote connect /dev/tty.usbmodem1101 cp main.py :main.py
 mpremote connect /dev/tty.usbmodem1101 reset
 ```
-
-复位后 `main.py` 自动运行。
 
 ## 手动测试
 
