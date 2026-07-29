@@ -128,7 +128,12 @@ class ChipConnection:
                     self._serial = ser
                     self._port = port
                 log.info("chip connected on %s", port)
-                return True
+                # reset any stale LED state from before we (re)connected
+                try:
+                    self.send_command("LED OFF")
+                except (ChipDisconnected, ChipTimeout):
+                    log.warning("could not reset LED state after connect")
+                return self.connected
             log.warning("%s replied %r, not our chip", port, reply)
             ser.close()
         return False

@@ -62,9 +62,13 @@ MARKER = "cclight-hook"
 # off = finished / waiting for the user's next prompt
 mapping = {
     "UserPromptSubmit": "breath",  # user submitted, Claude starts working
-    "SessionStart": "breath",
-    "Notification": "flash",       # permission request / needs attention
+    "PreToolUse": "breath",        # tool activity = working; also restores
+    "PostToolUse": "breath",       #   breath after an approved permission
+    "PermissionRequest": "flash",  # about to show the permission dialog
+    "Notification": "flash",       # needs attention; fallback for the above —
+                                   # dispatched with 1-3s lag (claude-code#19627)
     "Stop": "off",                 # finished responding, user's turn
+    "SessionStart": "off",         # session opened, standing by for input
     "SessionEnd": "off",
 }
 

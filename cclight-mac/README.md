@@ -8,6 +8,7 @@ MacOS 上的 Python agent:通过 USB 串口连接 cclight-esp32 芯片,
 - **同步接口**:每个 HTTP 请求都等芯片回复后才返回
 - **自动发现**:扫描 `/dev/tty.usbmodem*`,用 `PING`/`PONG` 握手识别芯片
 - **自动重连**:后台每 5s 心跳;断开(含拔 USB)后每 3s 重扫端口,插回自动恢复
+- **状态归零**:每次连接成功(启动或重连)先发 `LED OFF`,清掉芯片上的残留状态
 - **全程日志**:连接/断开/重连、每条 HTTP 请求、每条串口命令及回复都打到 stdout
 
 ## 安装(推荐)
@@ -23,9 +24,13 @@ MacOS 上的 Python agent:通过 USB 串口连接 cclight-esp32 芯片,
 3. 在 `~/.cclight-mac/.venv` 创建 venv 并安装依赖
 4. 修改 Claude Code 全局配置 `~/.claude/settings.json` 的 hooks
    (原文件先备份为 `settings.json.cclight-backup`,已有配置不受影响):
-   - `UserPromptSubmit` / `SessionStart`(Claude 开始干活)→ 呼吸灯
-   - `Notification`(权限请求/需要注意)→ 快闪
-   - `Stop` / `SessionEnd`(回答完毕,等新指令)→ 熄灭
+   - `UserPromptSubmit` / `PreToolUse` / `PostToolUse`(Claude 在干活)→ 呼吸灯
+     (工具事件同时解决"授权通过后灯停在快闪"的问题:授权后一有工具动作就回到呼吸)
+   - `PermissionRequest` / `Notification`(权限请求/需要注意)→ 快闪
+     (`Notification` 的派发有 1-3s 延迟,是 Claude Code 的已知问题
+     [claude-code#19627](https://github.com/anthropics/claude-code/issues/19627);
+     `PermissionRequest` 在弹框前触发,用来消除这个延迟)
+   - `Stop` / `SessionStart` / `SessionEnd`(待命,等用户输入)→ 熄灭
    - hook 用 `curl` 调本机 agent,2s 超时且不报错,agent 没启动也不影响 Claude Code
 
 重复运行安装脚本是安全的:文件覆盖、venv 复用、hook 替换不重复。
