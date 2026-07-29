@@ -52,6 +52,8 @@ class Led:
         self._pwm.duty(duty)
 
     def set_mode(self, mode):
+        if mode == self._mode:
+            return  # idempotent: a repeated command must not restart the phase
         self._mode = mode
         self._t0 = time.ticks_ms()
         self.tick()

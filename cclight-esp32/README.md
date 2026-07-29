@@ -77,6 +77,9 @@ screen /dev/tty.usbmodem1101 115200
 | `LED ON` | `OK ON`(常亮,仅供接线调试) |
 | `STATUS` | `OK <当前模式>` |
 
+命令幂等:重复发送当前模式的命令会正常回复 `OK`,但不重置灯效相位
+(呼吸/闪烁不会因重复命令跳变)。
+
 Mac 端 agent(cclight-mac)用 pyserial 打开同一端口、按行读写即可。
 
 ## 注意
