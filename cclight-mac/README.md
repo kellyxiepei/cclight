@@ -30,6 +30,20 @@ MacOS 上的 Python agent:通过 USB 串口连接 cclight-esp32 芯片,
 重复运行安装脚本是安全的:文件覆盖、venv 复用、hook 替换不重复。
 装完后运行 `~/.cclight-mac/start_cclight.sh` 启动,重启 Claude Code 让 hooks 生效。
 
+## 卸载
+
+```bash
+~/.cclight-mac/uninstall.sh
+```
+
+依次:停掉运行中的 agent → 从 `~/.claude/settings.json` 移除全部 cclight
+hooks(改动前备份为 `settings.json.cclight-backup`,你自己的 hooks 和其他
+配置原样保留)→ 删除 `~/.cclight-mac`。没装过 git 的机器也可以一条命令:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kellyxiepei/cclight/main/cclight-mac/uninstall.sh | bash
+```
+
 ## 启动
 
 前台运行:

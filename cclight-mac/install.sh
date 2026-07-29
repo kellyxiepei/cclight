@@ -34,8 +34,10 @@ cp "$SCRIPT_DIR/agent.py" \
    "$SCRIPT_DIR/requirements.txt" \
    "$SCRIPT_DIR/start_cclight.sh" \
    "$SCRIPT_DIR/stop_cclight.sh" \
+   "$SCRIPT_DIR/uninstall.sh" \
    "$INSTALL_DIR/"
-chmod +x "$INSTALL_DIR/start_cclight.sh" "$INSTALL_DIR/stop_cclight.sh"
+chmod +x "$INSTALL_DIR/start_cclight.sh" "$INSTALL_DIR/stop_cclight.sh" \
+         "$INSTALL_DIR/uninstall.sh"
 
 # ---- 2. venv + dependencies ----
 echo "==> setting up venv at $VENV_DIR"

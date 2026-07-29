@@ -24,6 +24,16 @@ curl -fsSL https://raw.githubusercontent.com/kellyxiepei/cclight/main/bootstrap.
 再重启 Claude Code 使 hooks 生效。板子端的刷固件/烧录见
 [cclight-esp32/README.md](cclight-esp32/README.md)(`./burn.sh` 一键烧录)。
 
+## 一条命令卸载
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kellyxiepei/cclight/main/cclight-mac/uninstall.sh | bash
+```
+
+停掉 agent、从 `~/.claude/settings.json` 移除 cclight hooks(自动备份,
+你自己的配置不受影响)、删除 `~/.cclight-mac`。本地装好的机器上也可以直接跑
+`~/.cclight-mac/uninstall.sh`。
+
 ## 手动安装
 
 ```bash
