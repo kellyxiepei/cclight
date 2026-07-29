@@ -58,12 +58,13 @@ path = os.environ["CLAUDE_SETTINGS"]
 url = os.environ["AGENT_URL"]
 MARKER = "cclight-hook"
 
-# LED on when Claude is waiting for the user, off while it works
+# state language: breath = working, flash = permission request,
+# off = finished / waiting for the user's next prompt
 mapping = {
-    "Notification": "on",       # permission request / waiting for input
-    "Stop": "on",               # finished responding, user's turn
-    "UserPromptSubmit": "off",  # user submitted, Claude is working
-    "SessionStart": "off",
+    "UserPromptSubmit": "breath",  # user submitted, Claude starts working
+    "SessionStart": "breath",
+    "Notification": "flash",       # permission request / needs attention
+    "Stop": "off",                 # finished responding, user's turn
     "SessionEnd": "off",
 }
 
@@ -100,7 +101,7 @@ echo "install complete."
 echo
 echo "  agent dir : $INSTALL_DIR"
 echo "  venv      : $VENV_DIR"
-echo "  hooks     : $CLAUDE_SETTINGS (Notification/Stop -> LED on, UserPromptSubmit -> LED off)"
+echo "  hooks     : $CLAUDE_SETTINGS (working -> breath, permission -> flash, done -> off)"
 echo
 echo "next steps:"
 echo "  1. plug in the cclight-esp32 board via USB"

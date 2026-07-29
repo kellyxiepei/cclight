@@ -23,8 +23,9 @@ MacOS 上的 Python agent:通过 USB 串口连接 cclight-esp32 芯片,
 3. 在 `~/.cclight-mac/.venv` 创建 venv 并安装依赖
 4. 修改 Claude Code 全局配置 `~/.claude/settings.json` 的 hooks
    (原文件先备份为 `settings.json.cclight-backup`,已有配置不受影响):
-   - `Notification` / `Stop`(Claude 等待用户输入)→ 亮灯
-   - `UserPromptSubmit` / `SessionStart` / `SessionEnd`(不需要输入)→ 灭灯
+   - `UserPromptSubmit` / `SessionStart`(Claude 开始干活)→ 呼吸灯
+   - `Notification`(权限请求/需要注意)→ 快闪
+   - `Stop` / `SessionEnd`(回答完毕,等新指令)→ 熄灭
    - hook 用 `curl` 调本机 agent,2s 超时且不报错,agent 没启动也不影响 Claude Code
 
 重复运行安装脚本是安全的:文件覆盖、venv 复用、hook 替换不重复。
@@ -74,18 +75,24 @@ tail -f agent.log    # 实时看芯片状态/连接日志
 
 | 方法 路径 | 动作 | 成功响应 |
 |---|---|---|
-| `POST /led/on` | 开灯 | `{"ok": true, "reply": "OK ON"}` |
-| `POST /led/off` | 关灯 | `{"ok": true, "reply": "OK OFF"}` |
-| `GET /led` | 查询 LED 状态 | `{"ok": true, "led": "on"}` |
+| `POST /led/breath` | 呼吸灯(干活中) | `{"ok": true, "reply": "OK BREATH"}` |
+| `POST /led/flash` | 快闪(权限请求) | `{"ok": true, "reply": "OK FLASH"}` |
+| `POST /led/double` | 双闪(出错/测试失败) | `{"ok": true, "reply": "OK DOUBLE"}` |
+| `POST /led/off` | 熄灭(等新指令) | `{"ok": true, "reply": "OK OFF"}` |
+| `POST /led/on` | 常亮(接线调试用) | `{"ok": true, "reply": "OK ON"}` |
+| `GET /led` | 查询当前模式 | `{"ok": true, "mode": "breath"}` |
 | `GET /health` | 查询连接状态(不访问芯片) | `{"connected": true, "port": "/dev/tty.usbmodem1101"}` |
 
-错误响应:芯片断开 → `503 {"ok": false, "error": "chip disconnected"}`;
-回复超时 → `504`;芯片报错 → `502`。
+错误响应:未知模式 → `404`;芯片断开 → `503 {"ok": false, "error": "chip
+disconnected"}`;回复超时 → `504`;芯片报错 → `502`。
+双闪目前没有接 Claude Code hook(没有现成的"出错"事件),供手动或第三方调用。
 
 ## 测试
 
 ```bash
-curl -X POST localhost:8123/led/on
+curl -X POST localhost:8123/led/breath
+curl -X POST localhost:8123/led/flash
+curl -X POST localhost:8123/led/double
 curl -X POST localhost:8123/led/off
 curl localhost:8123/led
 curl localhost:8123/health

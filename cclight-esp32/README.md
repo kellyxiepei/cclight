@@ -1,6 +1,14 @@
 # cclight-esp32
 
-ESP32-C3 + MicroPython 固件:通过 USB 串口接收命令,控制外接 LED 开关。
+ESP32-C3 + MicroPython 固件:通过 USB 串口接收命令,用不同灯效表达
+Claude Code 状态:
+
+| 灯效 | 含义 |
+|---|---|
+| 呼吸(3s 周期) | Claude 干活中,安心走开 |
+| 快闪(5Hz) | 权限请求,值得马上回来 |
+| 双闪 | 出错/测试失败 |
+| 熄灭 | 回答完毕,等你的新指令 |
 
 ## 硬件接线
 
@@ -62,9 +70,12 @@ screen /dev/tty.usbmodem1101 115200
 | 命令 | 回复 |
 |---|---|
 | `PING` | `PONG` |
-| `LED ON` | `OK ON`(LED 亮) |
-| `LED OFF` | `OK OFF`(LED 灭) |
-| `STATUS` | `OK ON` / `OK OFF` |
+| `LED BREATH` | `OK BREATH`(呼吸) |
+| `LED FLASH` | `OK FLASH`(快闪) |
+| `LED DOUBLE` | `OK DOUBLE`(双闪) |
+| `LED OFF` | `OK OFF`(熄灭) |
+| `LED ON` | `OK ON`(常亮,仅供接线调试) |
+| `STATUS` | `OK <当前模式>` |
 
 Mac 端 agent(cclight-mac)用 pyserial 打开同一端口、按行读写即可。
 

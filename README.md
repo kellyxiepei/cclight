@@ -1,6 +1,7 @@
 # cclight
 
-用一盏 LED 灯提示 Claude Code 状态:Claude 等你输入时亮灯,干活时灭灯。
+用一盏 LED 灯提示 Claude Code 状态:呼吸 = 干活中,快闪 = 权限请求,
+双闪 = 出错,熄灭 = 回答完毕等你输入。
 
 - **cclight-esp32/** — ESP32-C3 + MicroPython 固件,USB 串口收命令控制 LED
 - **cclight-mac/** — Mac 端 agent,把芯片能力暴露为 HTTP 接口,并通过

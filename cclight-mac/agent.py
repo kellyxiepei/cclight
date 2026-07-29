@@ -1,10 +1,12 @@
 """cclight-mac: HTTP agent exposing the cclight-esp32 chip over USB serial.
 
 Endpoints (all synchronous — each waits for the chip's reply):
-    POST /led/on   -> {"ok": true, "reply": "OK ON"}
-    POST /led/off  -> {"ok": true, "reply": "OK OFF"}
-    GET  /led      -> {"ok": true, "led": "on"|"off"}
-    GET  /health   -> {"connected": bool, "port": str|null}
+    POST /led/<mode>  -> {"ok": true, "reply": "OK <MODE>"}
+                         mode: breath (working) | flash (permission request)
+                             | double (error) | off (idle, waiting for user)
+                             | on (steady, debugging)
+    GET  /led         -> {"ok": true, "mode": "breath"|"flash"|"double"|"on"|"off"}
+    GET  /health      -> {"connected": bool, "port": str|null}
 
 The serial link is managed by ChipConnection: it auto-discovers the chip
 (PING/PONG handshake), heartbeats it in the background, and reconnects
@@ -180,16 +182,14 @@ def create_app(chip):
     def log_request():
         log.info("http %s %s", request.method, request.path)
 
-    @app.post("/led/on")
-    def led_on():
-        reply, err = run_command("LED ON")
-        if err:
-            return err
-        return jsonify({"ok": True, "reply": reply})
+    MODES = ("breath", "flash", "double", "on", "off")
 
-    @app.post("/led/off")
-    def led_off():
-        reply, err = run_command("LED OFF")
+    @app.post("/led/<mode>")
+    def led_set(mode):
+        if mode not in MODES:
+            return jsonify({"ok": False,
+                            "error": "unknown mode, use one of: %s" % ", ".join(MODES)}), 404
+        reply, err = run_command("LED " + mode.upper())
         if err:
             return err
         return jsonify({"ok": True, "reply": reply})
@@ -199,7 +199,7 @@ def create_app(chip):
         reply, err = run_command("STATUS")
         if err:
             return err
-        return jsonify({"ok": True, "led": "on" if reply == "OK ON" else "off"})
+        return jsonify({"ok": True, "mode": reply.split()[-1].lower()})
 
     @app.get("/health")
     def health():
