@@ -12,10 +12,20 @@ MacOS 上的 Python agent:通过 USB 串口连接 cclight-esp32 芯片,
 
 ## 启动
 
+前台运行:
+
 ```bash
 source ../.venv/bin/activate
 pip install -r requirements.txt
 python agent.py
+```
+
+后台运行(日志写入 `agent.log`,PID 记录在 `agent.pid`):
+
+```bash
+./start_cclight.sh   # 已在运行则直接提示,不会重复启动
+./stop_cclight.sh    # 优雅停止,5s 不退出则强杀
+tail -f agent.log    # 实时看芯片状态/连接日志
 ```
 
 默认监听 `127.0.0.1:8123`。环境变量:
