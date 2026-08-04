@@ -27,7 +27,9 @@ MacOS 上的 Python agent:通过 USB 串口连接 cclight-esp32 芯片,
    - `UserPromptSubmit` / `PreToolUse` / `PostToolUse` / `PreCompact`
      (Claude 在干活,包括压缩上下文)→ 呼吸灯
      (工具事件同时解决"授权通过后灯停在快闪"的问题:授权后一有工具动作就回到呼吸)
-   - `PermissionRequest` / `Notification`(权限请求/需要注意)→ 快闪
+   - `PermissionRequest` / `Notification`(仅 `permission_prompt` 类型)→ 快闪
+     (Notification 加了匹配器:空闲 60 秒的"等待输入"提醒不再触发快闪,
+     待命状态保持熄灭)
      (`Notification` 的派发有 1-3s 延迟,是 Claude Code 的已知问题
      [claude-code#19627](https://github.com/anthropics/claude-code/issues/19627);
      `PermissionRequest` 在弹框前触发,用来消除这个延迟)

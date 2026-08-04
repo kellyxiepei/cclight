@@ -11,7 +11,7 @@
 | 灯效 | 含义 | hook 来源 |
 |---|---|---|
 | 呼吸(3s 三角波) | Claude 干活中(含压缩上下文) | `UserPromptSubmit`, `PreToolUse`, `PostToolUse`(工具事件负责在授权通过后把灯从快闪拉回呼吸,因为没有"授权通过"事件), `PreCompact`(压缩确认后转呼吸) |
-| 快闪(5Hz) | 权限请求,值得马上回来 | `PermissionRequest`(弹框前即触发),`Notification` 兜底(其派发有 1-3s 延迟,claude-code#19627) |
+| 快闪(5Hz) | 权限请求,值得马上回来 | `PermissionRequest`(弹框前即触发),`Notification`(限 `permission_prompt` 匹配器 —— 不加会连空闲 60s 提醒也触发;派发有延迟,claude-code#19627) |
 | 双闪(闪两下停一拍,1.2s 循环) | 出错/测试失败 | 暂不接 hook,仅 HTTP 能力 |
 | 熄灭 | 待命等输入(回答完毕/会话启动/会话结束) | `Stop`, `SessionStart`, `SessionEnd` |
 

@@ -60,18 +60,21 @@ MARKER = "cclight-hook"
 
 # state language: breath = working, flash = permission request,
 # off = finished / waiting for the user's next prompt
-mapping = {
-    "UserPromptSubmit": "breath",  # user submitted, Claude starts working
-    "PreToolUse": "breath",        # tool activity = working; also restores
-    "PostToolUse": "breath",       #   breath after an approved permission
-    "PreCompact": "breath",        # compacting context = working
-    "PermissionRequest": "flash",  # about to show the permission dialog
-    "Notification": "flash",       # needs attention; fallback for the above —
-                                   # dispatched with 1-3s lag (claude-code#19627)
-    "Stop": "off",                 # finished responding, user's turn
-    "SessionStart": "off",         # session opened, standing by for input
-    "SessionEnd": "off",
-}
+# (event, led mode, matcher or None)
+mapping = [
+    ("UserPromptSubmit", "breath", None),  # user submitted, Claude starts working
+    ("PreToolUse", "breath", None),        # tool activity = working; also restores
+    ("PostToolUse", "breath", None),       #   breath after an approved permission
+    ("PreCompact", "breath", None),        # compacting context = working
+    ("PermissionRequest", "flash", None),  # about to show the permission dialog
+    # permission notifications only — unmatched, this also fires on the
+    # 60s-idle reminder and turns standby into a spurious flash; it is
+    # anyway dispatched with lag (claude-code#19627)
+    ("Notification", "flash", "permission_prompt"),
+    ("Stop", "off", None),                 # finished responding, user's turn
+    ("SessionStart", "off", None),         # session opened, standing by for input
+    ("SessionEnd", "off", None),
+]
 
 os.makedirs(os.path.dirname(path), exist_ok=True)
 settings = {}
@@ -83,7 +86,7 @@ if os.path.exists(path):
         settings = json.loads(content)
 
 hooks = settings.setdefault("hooks", {})
-for event, action in mapping.items():
+for event, action, matcher in mapping:
     command = ("curl -s -m 2 -X POST %s/led/%s >/dev/null 2>&1 || true"
                " # %s" % (url, action, MARKER))
     entries = hooks.setdefault(event, [])
@@ -92,7 +95,10 @@ for event, action in mapping.items():
         entry["hooks"] = [h for h in entry.get("hooks", [])
                           if MARKER not in h.get("command", "")]
     entries[:] = [e for e in entries if e.get("hooks")]
-    entries.append({"hooks": [{"type": "command", "command": command}]})
+    entry = {"hooks": [{"type": "command", "command": command}]}
+    if matcher:
+        entry["matcher"] = matcher
+    entries.append(entry)
 
 with open(path, "w") as f:
     json.dump(settings, f, indent=2)
