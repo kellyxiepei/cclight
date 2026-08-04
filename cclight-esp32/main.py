@@ -27,7 +27,7 @@ ACTIVE_HIGH = True  # True: high level lights the LED; False: low level
 BUZZER_PIN = 4      # passive buzzer, not used yet — held low (silent)
 
 TICK_MS = 20            # pattern refresh / serial poll interval
-BREATH_PERIOD_MS = 1000
+BREATH_PERIOD_MS = 2000
 FLASH_PERIOD_MS = 200   # 5 Hz
 DOUBLE_PERIOD_MS = 1200  # two 100ms flashes, then pause
 
