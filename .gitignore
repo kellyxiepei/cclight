@@ -4,3 +4,4 @@ __pycache__/
 .DS_Store
 cclight-mac/agent.log
 cclight-mac/agent.pid
+cclight-esp32/.firmware/

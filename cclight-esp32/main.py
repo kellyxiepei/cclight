@@ -22,11 +22,12 @@ import time
 from machine import Pin, PWM
 
 # ---- hardware config: adjust to your wiring ----
-LED_PIN = 4         # GPIO the external LED is wired to
+LED_PIN = 2         # GPIO the external LED is wired to (anode via resistor)
 ACTIVE_HIGH = True  # True: high level lights the LED; False: low level
+BUZZER_PIN = 4      # passive buzzer, not used yet — held low (silent)
 
 TICK_MS = 20            # pattern refresh / serial poll interval
-BREATH_PERIOD_MS = 3000
+BREATH_PERIOD_MS = 1000
 FLASH_PERIOD_MS = 200   # 5 Hz
 DOUBLE_PERIOD_MS = 1200  # two 100ms flashes, then pause
 
@@ -101,6 +102,7 @@ def handle_command(line, led):
 
 
 def main():
+    Pin(BUZZER_PIN, Pin.OUT).value(0)  # keep the unused passive buzzer silent
     led = Led(LED_PIN, ACTIVE_HIGH)
     poller = select.poll()
     poller.register(sys.stdin, select.POLLIN)

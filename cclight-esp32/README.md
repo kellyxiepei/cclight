@@ -10,12 +10,12 @@ Claude Code 状态:
 | 双闪 | 出错/测试失败 |
 | 熄灭 | 回答完毕,等你的新指令 |
 
-## 硬件接线
+## 硬件接线(ESP32-C3 SuperMini)
 
-- LED 正极(长脚)→ 330Ω 电阻 → **GPIO4**
-- LED 负极(短脚)→ **GND**
+- LED 正极(长脚)→ 串联电阻 → **GPIO4**;LED 负极(短脚)→ **GND**
+- 无源蜂鸣器 → **GPIO2**(暂未使用,固件启动时拉低保持静音)
 
-如接到其他引脚或低电平点亮,改 `main.py` 顶部的 `LED_PIN` / `ACTIVE_HIGH`。
+如接线不同,改 `main.py` 顶部的 `LED_PIN` / `ACTIVE_HIGH` / `BUZZER_PIN`。
 
 ## 一次性准备:刷 MicroPython 固件
 
@@ -43,11 +43,15 @@ Claude Code 状态:
 ## 烧录本程序
 
 ```bash
-./burn.sh
+./burn.sh              # 板上已有 MicroPython:只烧 main.py
+./burn.sh --firmware   # 全新板子:先擦除并刷入最新版 MicroPython,再烧 main.py
 ```
 
-脚本会自动探测 `/dev/tty.usbmodem*` 串口(多个设备或要指定时:`./burn.sh <port>`),
-必要时把 mpremote 装进项目 venv,把 `main.py` 拷到板上并复位,复位后自动运行。
+脚本会自动探测 `/dev/tty.usbmodem*` 串口(多个设备或要指定时:`./burn.sh [--firmware] <port>`),
+自动把 mpremote/esptool 装进项目 venv。`--firmware` 会从 micropython.org 抓取
+最新 ESP32_GENERIC_C3 固件(缓存在 `.firmware/`),**擦除整片 flash** 后刷入。
+烧 main.py 前会自动 Ctrl-C 中断板上正在运行的程序(用 resume 模式拷贝,
+避免阻塞型程序卡住 raw REPL),烧完复位并用 PING/PONG 自动验证。
 注意:烧录前要先停掉 cclight-mac agent(它占用串口),脚本检测到端口被占用会提示。
 
 手动等价操作:
