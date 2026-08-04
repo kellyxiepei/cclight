@@ -64,6 +64,7 @@ mapping = {
     "UserPromptSubmit": "breath",  # user submitted, Claude starts working
     "PreToolUse": "breath",        # tool activity = working; also restores
     "PostToolUse": "breath",       #   breath after an approved permission
+    "PreCompact": "breath",        # compacting context = working
     "PermissionRequest": "flash",  # about to show the permission dialog
     "Notification": "flash",       # needs attention; fallback for the above —
                                    # dispatched with 1-3s lag (claude-code#19627)

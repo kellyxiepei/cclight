@@ -24,7 +24,8 @@ MacOS 上的 Python agent:通过 USB 串口连接 cclight-esp32 芯片,
 3. 在 `~/.cclight-mac/.venv` 创建 venv 并安装依赖
 4. 修改 Claude Code 全局配置 `~/.claude/settings.json` 的 hooks
    (原文件先备份为 `settings.json.cclight-backup`,已有配置不受影响):
-   - `UserPromptSubmit` / `PreToolUse` / `PostToolUse`(Claude 在干活)→ 呼吸灯
+   - `UserPromptSubmit` / `PreToolUse` / `PostToolUse` / `PreCompact`
+     (Claude 在干活,包括压缩上下文)→ 呼吸灯
      (工具事件同时解决"授权通过后灯停在快闪"的问题:授权后一有工具动作就回到呼吸)
    - `PermissionRequest` / `Notification`(权限请求/需要注意)→ 快闪
      (`Notification` 的派发有 1-3s 延迟,是 Claude Code 的已知问题
